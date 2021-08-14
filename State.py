@@ -1,18 +1,16 @@
-import pygame
+import pygame, sys
 
 
 class State:
-    def __init__(self, controls, screen):
-        self.controls = controls
-        self.scr = screen
-        self.state = ["menu"]
-        self.running = True
+    def __init__(self, surface):
+        self.surface = surface
+        self.state = []
 
-    def run(self):
-        return self.running
+    def update(self):
+        self.state[-1].update()
 
-    def currentstate(self):
-        return self.state[-1]
+    def render(self):
+        self.state[-1].render(self.surface)
 
     def enterstate(self, state):
         self.state.append(state)
@@ -20,19 +18,35 @@ class State:
     def exitstate(self):
         self.state.pop()
 
-    def menu(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
 
-    def ingame(self, themap, t):
-        self.map = themap
+class MainMenu(State):
+    def __init__(self, surface):
+        State(self).__init__(surface)
+
+    def render(self):
+        pass
+
+    def update(self):
+        pass
 
 
-        self.map.render()
+class InGame(State):
+    def __init__(self, surface):
+        State(self).__init__(surface)
 
-    def ingame_menu(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
+    def render(self):
+        pass
 
+    def update(self):
+        pass
+
+
+class IGMenu(State):
+    def __init__(self, surface):
+        State(self).__init__(surface)
+
+    def render(self):
+        pass
+
+    def update(self):
+        pass

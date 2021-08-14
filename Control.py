@@ -1,3 +1,5 @@
+import sys
+
 import pygame
 import os, json
 
@@ -19,11 +21,11 @@ actions = {
 def load_control():
     try:
         with open(os.path.join('control.json'), 'r+') as file:
-            controls = json.load(file)
+            control = json.load(file)
     except:
-        controls = creat_defaultcontrol()
-        save_control(controls)
-    return controls
+        control = creat_defaultcontrol()
+        save_control(control)
+    return control
 
 
 def save_control(data):
@@ -32,7 +34,7 @@ def save_control(data):
 
 
 def creat_defaultcontrol():
-    controls = {
+    control = {
         "Esc": pygame.K_ESCAPE,
         "Up": pygame.K_UP,
         "Left": pygame.K_LEFT,
@@ -45,63 +47,73 @@ def creat_defaultcontrol():
         "4": pygame.K_4,
         "5": pygame.K_5
     }
-    return controls
+    return control
 
 
 def control_setting():
     pass
 
 
-def keycheck(controls):
+def keycheck(control):
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
-            if event.key == controls["Esc"]:
+            if event.key == control["Esc"]:
                 actions["Esc"] = True
-            if event.key == controls["Up"]:
+                pygame.quit()
+                sys.exit()
+            if event.key == control["Up"]:
                 actions["Up"] = True
-            if event.key == controls["Left"]:
+            if event.key == control["Left"]:
                 actions["Left"] = True
-            if event.key == controls["Down"]:
+            if event.key == control["Down"]:
                 actions["Down"] = True
-            if event.key == controls["Right"]:
+            if event.key == control["Right"]:
                 actions["Right"] = True
-            if event.key == controls["Start"]:
+            if event.key == control["Start"]:
                 actions["Start"] = True
-            if event.key == controls["1"]:
+            if event.key == control["1"]:
                 actions["1"] = True
-            if event.key == controls["2"]:
+            if event.key == control["2"]:
                 actions["2"] = True
-            if event.key == controls["3"]:
+            if event.key == control["3"]:
                 actions["3"] = True
-            if event.key == controls["4"]:
+            if event.key == control["4"]:
                 actions["4"] = True
-            if event.key == controls["5"]:
+            if event.key == control["5"]:
                 actions["5"] = True
         if event.type == pygame.KEYUP:
-            if event.key == controls["Esc"]:
+            if event.key == control["Esc"]:
                 actions["Esc"] = False
-            if event.key == controls["Up"]:
+            if event.key == control["Up"]:
                 actions["Up"] = False
-            if event.key == controls["Left"]:
+            if event.key == control["Left"]:
                 actions["Left"] = False
-            if event.key == controls["Down"]:
+            if event.key == control["Down"]:
                 actions["Down"] = False
-            if event.key == controls["Right"]:
+            if event.key == control["Right"]:
                 actions["Right"] = False
-            if event.key == controls["Start"]:
+            if event.key == control["Start"]:
                 actions["Start"] = False
-            if event.key == controls["1"]:
+            if event.key == control["1"]:
                 actions["1"] = False
-            if event.key == controls["2"]:
+            if event.key == control["2"]:
                 actions["2"] = False
-            if event.key == controls["3"]:
+            if event.key == control["3"]:
                 actions["3"] = False
-            if event.key == controls["4"]:
+            if event.key == control["4"]:
                 actions["4"] = False
-            if event.key == controls["5"]:
+            if event.key == control["5"]:
                 actions["5"] = False
+
+
+def resetkey():
+    for action in actions:
+        actions[action] = False
 
 
 def click():
     pos = pygame.mouse.get_pos()
     return pos
+
+
+controls = load_control()
