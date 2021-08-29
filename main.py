@@ -1,52 +1,25 @@
+import sys
 from Towers import *
-from Map import *
-from Enemy import *
-from Control import *
 from State import *
 
 
 running = True
 
-
-scr = Screen(900, 600, 'fuck this shit')
-map0 = Map(scr, 12, 8, 'fucku', [(0, 300), (200, 300), (200, 100), (400, 100), (400, 300), (600, 300)])
-map0.render()
-scr.render()
-game = State(scr)
+window_width, window_height = 800, 600
+scr = Screen(window_width, window_height, 'fuck this shit')
+map0 = Map(20, 15, 'fucku', [[-1, 3], [3, 3], [3, 8], [8, 8], [8, 3], [12, 3]])
+game = Game()
 
 towers = []
 enemies = []
 
 clock = pygame.time.Clock()
-towers.append(ArrowTower(map0, 1, 1, 1))
-enemies.append(Enemy(80, 0, 0, map0))
-i = 0
 
-while running:
-    t = clock.tick(60)
-    keycheck(controls)
 
-    scr.clear()
-    map0.render()
+while not actions["Quit"]:
+    t = clock.tick(100)
+    game.gameloop(t)
 
-    for tower in towers:
-        for bullet in tower.bullets:
-            for enemy in enemies:
-                if enemy.hitbox[0] - bullet.hitbox[2] < bullet.hitbox[0] <= enemy.hitbox[0] + enemy.hitbox[2]:
-                    if enemy.hitbox[1] - bullet.hitbox[3] < bullet.hitbox[1] <= enemy.hitbox[1] + enemy.hitbox[3]:
-                        enemy.get_hit(bullet)
-                        del tower.bullets[0]
-            bullet.move(t)
-            bullet.render(scr)
-
-    for enemy in enemies:
-        if enemy.dead(t):
-            del enemy
-        else:
-            enemy.move(t)
-            enemy.render(scr)
-            for tower in towers:
-                tower.inrange(enemy.position())
-                tower.update(t)
-
-    scr.render()
+pygame.display.quit()
+pygame.quit()
+sys.exit()

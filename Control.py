@@ -1,10 +1,15 @@
-import sys
-
 import pygame
 import os, json
 
+# TO DO
+# pygame.event.set_allowed([QUIT, KEYDOWN, KEYUP])
+
+
 actions = {
+        "Quit": False,
         "Esc": False,
+        "Left Click": False,
+        "Right Click": False,
         "Up": False,
         "Left": False,
         "Down": False,
@@ -16,20 +21,22 @@ actions = {
         "4": False,
         "5": False
     }
+hold = False
 
 
 def load_control():
     try:
-        with open(os.path.join('control.json'), 'r+') as file:
+        with open(os.path.join('assets', 'control.json'), 'r+') as file:
             control = json.load(file)
-    except:
+    except pygame.error:
+        # TO DO: Inform about control reset
         control = creat_defaultcontrol()
         save_control(control)
     return control
 
 
 def save_control(data):
-    with open(os.path.join(os.getcwd(), 'control.json'), 'w') as file:
+    with open(os.path.join(os.getcwd(), 'assets' , 'control.json'), 'w') as file:
         json.dump(data, file)
 
 
@@ -55,12 +62,28 @@ def control_setting():
 
 
 def keycheck(control):
+    global hold
+    click = False
+
     for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            actions["Quit"] = True
+
+        if pygame.mouse.get_pressed(3)[0] and not hold:
+            print(pygame.mouse.get_pos())
+            click = True
+            hold = True
+
+        if not pygame.mouse.get_pressed(3)[0]:
+            hold = False
+
+        actions["Left Click"] = (click, pygame.mouse.get_pressed(3)[0])
+        actions["Right Click"] = pygame.mouse.get_pressed(3)[2]
+        print(actions["Left Click"])
+
         if event.type == pygame.KEYDOWN:
             if event.key == control["Esc"]:
                 actions["Esc"] = True
-                pygame.quit()
-                sys.exit()
             if event.key == control["Up"]:
                 actions["Up"] = True
             if event.key == control["Left"]:
@@ -109,11 +132,6 @@ def keycheck(control):
 def resetkey():
     for action in actions:
         actions[action] = False
-
-
-def click():
-    pos = pygame.mouse.get_pos()
-    return pos
 
 
 controls = load_control()
