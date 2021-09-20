@@ -19,7 +19,8 @@ actions = {
         "2": False,
         "3": False,
         "4": False,
-        "5": False
+        "5": False,
+        "6": False
     }
 hold = False
 
@@ -28,7 +29,7 @@ def load_control():
     try:
         with open(os.path.join('assets', 'control.json'), 'r+') as file:
             control = json.load(file)
-    except pygame.error:
+    except:
         # TO DO: Inform about control reset
         control = creat_defaultcontrol()
         save_control(control)
@@ -47,12 +48,13 @@ def creat_defaultcontrol():
         "Left": pygame.K_LEFT,
         "Down": pygame.K_DOWN,
         "Right": pygame.K_RIGHT,
-        "Start": pygame.K_KP_ENTER,
+        "Start": pygame.K_RETURN,
         "1": pygame.K_1,
         "2": pygame.K_2,
         "3": pygame.K_3,
         "4": pygame.K_4,
-        "5": pygame.K_5
+        "5": pygame.K_5,
+        "6": pygame.K_6
     }
     return control
 
@@ -70,7 +72,6 @@ def keycheck(control):
             actions["Quit"] = True
 
         if pygame.mouse.get_pressed(3)[0] and not hold:
-            print(pygame.mouse.get_pos())
             click = True
             hold = True
 
@@ -79,7 +80,6 @@ def keycheck(control):
 
         actions["Left Click"] = (click, pygame.mouse.get_pressed(3)[0])
         actions["Right Click"] = pygame.mouse.get_pressed(3)[2]
-        print(actions["Left Click"])
 
         if event.type == pygame.KEYDOWN:
             if event.key == control["Esc"]:
@@ -104,6 +104,8 @@ def keycheck(control):
                 actions["4"] = True
             if event.key == control["5"]:
                 actions["5"] = True
+            if event.key == control["6"]:
+                actions["6"] = True
         if event.type == pygame.KEYUP:
             if event.key == control["Esc"]:
                 actions["Esc"] = False
@@ -127,6 +129,8 @@ def keycheck(control):
                 actions["4"] = False
             if event.key == control["5"]:
                 actions["5"] = False
+            if event.key == control["6"]:
+                actions["6"] = False
 
 
 def resetkey():

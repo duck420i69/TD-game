@@ -1,14 +1,15 @@
-import pygame.time
-
-from Map import *
-from Enemy import *
 from GUI import *
 from Control import *
+from Map import *
+from Towers import *
+from Enemy import *
 
 
 class Game:
     def __init__(self):
-        self.surface = Screen(400, 300, "Shitiest TD game ever")
+        self.w = 1000
+        self.h = 750
+        self.surface = Screen(self.w, self.h, "Shitiest TD game ever")
         self.state = [MainMenu(self)]
         self.mainmenu = self.state
 
@@ -24,6 +25,8 @@ class Game:
 class State:
     def __init__(self, game):
         self.game = game
+        self.gui = GUI(game)
+        self.options = {}
 
     def update(self, t):
         pass
@@ -32,6 +35,7 @@ class State:
         pass
 
     def enterstate(self, state):
+        self.gui.reset_button()
         self.game.state.append(state)
 
     def exitstate(self):
@@ -41,23 +45,23 @@ class State:
 class MainMenu(State):
     def __init__(self, game):
         super().__init__(game)
-        self.gui = GUI()
-        self.options = {}
-        self.gui.add_button("Start", 200, 60, 100, 20)
-        self.gui.add_button("Continue", 200, 90, 100, 20)
-        self.gui.add_button("Load", 200, 120, 100, 20)
-        self.gui.add_button("Setting", 200, 150, 100, 20)
-        self.gui.add_button("Exit", 200, 180, 100, 20)
+        self.gui = GUI(game)
+        self.gui.add_button("Start", 200, 100, 150, 30)
+        self.gui.add_button("Continue", 200, 140, 150, 30)
+        self.gui.add_button("Load", 200, 180, 150, 30)
+        self.gui.add_button("Setting", 200, 220, 150, 30)
+        self.gui.add_button("Exit", 200, 260, 150, 30)
 
     def render(self):
         self.game.surface.clear()
         self.gui.render(self.game.surface)
+        self.game.surface.write_text("shittiest td game", (0, 0, 0), (200, 30), 20)
         self.game.surface.render()
 
     def update(self, t):
-        self.options = self.gui.update()
+        self.options = self.gui.update(t)
         if self.options["Start"]:
-            self.enterstate(InGame(self.game))
+            self.enterstate(InGame(self.game, "fuck"))
         if self.options["Continue"]:
             pass
         if self.options["Load"]:
@@ -69,37 +73,98 @@ class MainMenu(State):
 
 
 class InGame(State):
-    def __init__(self, game):
+    def __init__(self, game, map_):
         super().__init__(game)
-        self.options = {}
-        self.gui = GUI()
-        path = [[-1, 3], [3, 6], [7, 6], [7, 10], [3, 10], [3, 12]]
-        self.map0 = Map(12, 10, 'fucku', path)
+        self.gui = GUI(game, False)
+        # mapdata = load_map(map_)
+        map_ = {
+            "map": [[0 for _ in range(17)] for _ in range(15)],
+            "path": [[-1, 3], [5, 3], [5, 10], [12, 10], [12, 5], [18, 5]],
+            "wave data": [[("Slime", 10, 1500, 5, 1500, 0)]],
+            "wave": 1,
+            "money": 400,
+            "live": 10
+        }
+        mapdata = map_
+        self.money = mapdata["money"]
+        self.live = mapdata["live"]
+        self.current_wave = mapdata["wave"]
+        self.map_ = Map(mapdata)
+
+        self.t = 0
+        self.lightning = []
+        self.wave = []
         self.towers = []
         self.enemies = []
+        self.coin = load_image("coin.png")
+        self.live_sprite = load_image("live.png")
+        self.gui_sprite = load_image("ingamegui.png")
+        self.frame = load_image("frame.png")
+        self.element_sprite = {
+            "Fire": load_image("fire_element.png"),
+            "Water": load_image("water_element.png"),
+            "Ice": load_image("ice_element.png"),
+            "Elec": load_image("elec_element.png"),
+            "Earth": [load_image("earth_element0.png"), load_image("earth_element1.png")]
+        }
+        self.selected = False
+        self.prev_sel = False
+        self.selected_tower = None
+        self.gui_setup_normal()
+
+    def gui_setup_normal(self):
+        self.gui.clear_button()
+        self.gui.add_button("Pause", 20, 20, 20, 20, "Esc")
+        self.gui.add_button("Call Waves", 20, 270, 20, 20, None, True)
+        self.gui.add_button("Fire", 370, 80, 20, 20, "1")
+        self.gui.add_button("Water", 370, 110, 20, 20, "2")
+        self.gui.add_button("Ice", 370, 140, 20, 20, "3")
+        self.gui.add_button("Elec", 370, 170, 20, 20, "4")
+        self.gui.add_button("Earth", 370, 200, 20, 20, "5")
+        self.gui.add_button("Wind", 370, 230, 20, 20, "6")
+
+    def gui_setup_tower(self):
+        self.gui.clear_button()
+        self.gui.add_button("Pause", 20, 20, 20, 20, "Esc")
+        self.gui.add_button("Call Waves", 20, 270, 20, 20, None, True)
+        self.gui.add_button("Upgrade", 370, 240, 20, 20, None, True)
+        self.gui.add_button("Sell", 370, 270, 20, 20, None, True)
 
     def render(self):
         self.game.surface.clear()
-        self.map0.render(self.game.surface)
+        self.map_.render(self.game.surface)
         for tower in self.towers:
             for bullet in tower.bullets:
                 bullet.render(self.game.surface)
         for enemy in self.enemies:
-            enemy.render(self.game.surface)
+            enemy.render(self.game.surface, self.element_sprite)
+        for lightning in self.lightning:
+            self.game.surface.draw_line((212, 0, 249), lightning[1], lightning[2])
+        self.game.surface.rect(340, 0, 60, 300, (255, 255, 0))
+        self.game.surface.blit(self.gui_sprite, 340, 0)
+        self.game.surface.blit(self.frame, 342, 16)
+        self.game.surface.blit(self.frame, 342, 36)
         self.gui.render(self.game.surface)
+        self.game.surface.write_text(f"{self.money}", (0, 0, 0), (395, 20), 8, "topright")
+        self.game.surface.write_text(f"{self.live}", (0, 0, 0), (395, 40), 8, "topright")
+        self.game.surface.blit(self.coin, 345, 20)
+        self.game.surface.blit(self.live_sprite, 345, 40)
         self.game.surface.render()
 
     def update(self, t):
-        self.options = self.gui.update()
-        j = 0
+        self.options = self.gui.update(t)
 
         ############### GAME SYSTEM ###############
 
         # Enemy stuff
         for enemy in self.enemies[:]:
-            if enemy.dead(t):
+            if enemy.delete:
+                self.money += enemy.reward()
                 self.enemies.remove(enemy)
+                if enemy.hp > 0:
+                    self.live -= enemy.life_lost
             else:
+                enemy.update(t)
                 enemy.move(t)
                 for tower in self.towers:
                     if tower.inrange(enemy.position()):
@@ -109,9 +174,32 @@ class InGame(State):
         for tower in self.towers:
             tower.update(t)
             if tower.any_target():
-                tower.shoot(tower.target[tower.aim_target()].position())
-            tower.clear_target()
-
+                target = tower.target[tower.aim_target()]
+                tower.shoot(target)
+                tower.clear_target()
+                if tower.effects["Elec"][0]:
+                    self.lightning.append([30, target.center(), (tower.x, tower.y)])
+                    next_target = None
+                    prev_target = None
+                    for _ in range(min(tower.effects["Elec"][2] - 1, len(self.enemies))):
+                        min_ = 80
+                        for enemy in self.enemies:
+                            if enemy != prev_target and enemy != target:
+                                distant = target.position().distance_to(enemy.position())
+                                if min_ >= distant:
+                                    min_ = distant
+                                    next_target = enemy
+                        if next_target == target:
+                            next_target = None
+                        if next_target is not None:
+                            self.lightning.append([30, target.center(), next_target.center()])
+                            tower.t = tower.t * 0.75
+                            tower.shoot(next_target)
+                            prev_target = target
+                            target = next_target
+                        else:
+                            break
+                    tower.t = 0
             for bullet in tower.bullets[:]:
                 bullet.move(t)
                 if (not -bullet.hitbox[2] < bullet.hitbox[0] < gameres_w
@@ -120,39 +208,182 @@ class InGame(State):
                 for enemy in self.enemies:
                     if enemy.hitbox[0] - bullet.hitbox[2] < bullet.hitbox[0] <= enemy.hitbox[0] + enemy.hitbox[2]:
                         if enemy.hitbox[1] - bullet.hitbox[3] < bullet.hitbox[1] <= enemy.hitbox[1] + enemy.hitbox[3]:
-                            enemy.get_hit(bullet)
-                            bullet.dead = True
-
+                            if not bullet.dead:
+                                if bullet.effects["Explosion"][0]:
+                                    for ene in self.enemies:
+                                        distant = enemy.position().distance_to(ene.position())
+                                        if distant <= bullet.effects["Explosion"][1]:
+                                            ene.get_hit(bullet)
+                                else:
+                                    enemy.get_hit(bullet)
+                                bullet.dead = True
                 if bullet.dead:
                     tower.bullets.remove(bullet)
 
-        j += t
-        if j > 1500:
-            self.enemies.append(Enemy(80, 0, 0, self.map0))
-            j = 0
+        for enemy_group in self.wave:
+            # [enemy_type, lv, density, amount, selftime, timer]
+            if self.t - enemy_group[5] >= 0:
+                enemy_group[4] += t
+                if enemy_group[3] > 0:
+                    if enemy_group[4] >= enemy_group[2]:
+                        enemy_group[3] -= 1
+                        enemy_group[4] = enemy_group[4] % enemy_group[2]
+                        if enemy_group[0] == "Slime":
+                            self.enemies.append(Slime(enemy_group[1], self.map_))
+                else:
+                    self.wave.remove(enemy_group)
+
+        for lightning in self.lightning:
+            if lightning[0] > 0:
+                lightning[0] -= t
+            else:
+                self.lightning.remove(lightning)
+
+        if actions["Left Click"][0]:
+            self.selected = False
+            for tower in self.towers:
+                tower.click(self.gui.mouse_pos)
+                if tower.selected:
+                    self.selected = True
+                    self.selected_tower = tower
+
+            if self.selected != self.prev_sel:
+                if self.selected:
+                    self.gui_setup_tower()
+                else:
+                    self.gui_setup_normal()
+                self.options = self.gui.update(0)
+                self.prev_sel = self.selected
 
         ############### GAME CONTROL ###############
-        if actions["Esc"]:
-            self.enterstate(IGMenu(self.game))
-        if actions["1"]:
-            self.options["Arrow"] = True
-        if actions["2"]:
-            self.options["Magic"] = True
-        if actions["3"]:
-            self.options["Bomb"] = True
-        if actions["4"]:
-            self.options["Poison"] = True
-        if actions["5"]:
-            self.options["Ice"] = True
+        if self.options["Pause"]:
+            self.exitstate()
+        if self.options["Call Waves"]:
+            self.t = 0
+            wave = self.map_.call_wave(self.current_wave)
+            print(wave)
+            self.wave = [list(i) for i in wave]
 
-        ############### GUI SETUP ###############
+        if not self.selected:
+            if self.options["Fire"]:
+                if actions["Left Click"][0]:
+                    x = self.gui.mouse_pos[0]//self.map_.tilesize
+                    y = self.gui.mouse_pos[1]//self.map_.tilesize
+                    if 0 <= x <= self.map_.w and 0 <= x <= self.map_.h:
+                        if self.money >= 50:
+                            if self.map_.assign(11, x, y):
+                                self.money -= 50
+                                fire = FireTower(self.map_, x, y, 1)
+                                self.towers.append(fire)
+                                self.map_.place_tower(fire)
+                        else:
+                            print("money insufficion")
+                        self.gui.buttons_dict["Fire"].press()
+                        self.gui.last_act = None
+
+            if self.options["Water"]:
+                if actions["Left Click"][0]:
+                    x = self.gui.mouse_pos[0]//self.map_.tilesize
+                    y = self.gui.mouse_pos[1]//self.map_.tilesize
+                    if 0 <= x <= self.map_.w and 0 <= x <= self.map_.h:
+                        if self.money >= 50:
+                            if self.map_.assign(21, x, y):
+                                self.money -= 50
+                                water = WaterTower(self.map_, x, y, 1)
+                                self.towers.append(water)
+                                self.map_.place_tower(water)
+                        else:
+                            print("money insufficion")
+                        self.gui.buttons_dict["Water"].press()
+                        self.gui.last_act = None
+
+            if self.options["Ice"]:
+                if actions["Left Click"][0]:
+                    x = self.gui.mouse_pos[0]//self.map_.tilesize
+                    y = self.gui.mouse_pos[1]//self.map_.tilesize
+                    if 0 <= x <= self.map_.w and 0 <= x <= self.map_.h:
+                        if self.money >= 50:
+                            if self.map_.assign(31, x, y):
+                                self.money -= 50
+                                ice = IceTower(self.map_, x, y, 1)
+                                self.towers.append(ice)
+                                self.map_.place_tower(ice)
+                        else:
+                            print("money insufficion")
+                        self.gui.buttons_dict["Ice"].press()
+                        self.gui.last_act = None
+
+            if self.options["Elec"]:
+                if actions["Left Click"][0]:
+                    x = self.gui.mouse_pos[0]//self.map_.tilesize
+                    y = self.gui.mouse_pos[1]//self.map_.tilesize
+                    if 0 <= x <= self.map_.w and 0 <= x <= self.map_.h:
+                        if self.money >= 50:
+                            if self.map_.assign(41, x, y):
+                                self.money -= 50
+                                elec = ElecTower(self.map_, x, y, 1)
+                                self.towers.append(elec)
+                                self.map_.place_tower(elec)
+                        else:
+                            print("money insufficion")
+                        self.gui.buttons_dict["Elec"].press()
+                        self.gui.last_act = None
+
+            if self.options["Earth"]:
+                if actions["Left Click"][0]:
+                    x = self.gui.mouse_pos[0]//self.map_.tilesize
+                    y = self.gui.mouse_pos[1]//self.map_.tilesize
+                    if 0 <= x <= self.map_.w and 0 <= x <= self.map_.h:
+                        if self.money >= 50:
+                            if self.map_.assign(51, x, y):
+                                self.money -= 50
+                                earth = EarthTower(self.map_, x, y, 1)
+                                self.towers.append(earth)
+                                self.map_.place_tower(earth)
+                        else:
+                            print("money insufficion")
+                        self.gui.buttons_dict["Earth"].press()
+                        self.gui.last_act = None
+
+            if self.options["Wind"]:
+                if actions["Left Click"][0]:
+                    x = self.gui.mouse_pos[0]//self.map_.tilesize
+                    y = self.gui.mouse_pos[1]//self.map_.tilesize
+                    if 0 <= x <= self.map_.w and 0 <= x <= self.map_.h:
+                        if self.money >= 50:
+                            if self.map_.assign(61, x, y):
+                                self.money -= 50
+                                wind = WindTower(self.map_, x, y, 1)
+                                self.towers.append(wind)
+                                self.map_.place_tower(wind)
+                        else:
+                            print("money insufficion")
+                        self.gui.buttons_dict["Wind"].press()
+                        self.gui.last_act = None
+
+        else:
+            if self.options["Upgrade"]:
+                if self.selected_tower.upgrade_price is not None:
+                    if self.money >= self.selected_tower.upgrade_price:
+                        self.money -= self.selected_tower.upgrade_price
+                        self.selected_tower.upgrade()
+                    else:
+                        print("insufficient money")
+                else:
+                    print("max lv")
+            if self.options["Sell"]:
+                self.money += self.selected_tower.sell()
+                self.towers.remove(self.selected_tower)
+                self.map_.sell_tower(self.selected_tower)
+            if actions["Right Click"]:
+                self.selected_tower.selected = False
+                self.gui_setup_normal()
+                self.prev_sel = True
 
 
 class IGMenu(State):
     def __init__(self, game):
         super().__init__(game)
-        self.options = {}
-        self.gui = GUI()
         self.gui.add_button("Resume", 200, 60, 100, 20)
         self.gui.add_button("Save & Load", 200, 90, 100, 20)
         self.gui.add_button("Setting", 200, 120, 100, 20)
@@ -163,7 +394,7 @@ class IGMenu(State):
 
     def update(self, t):
         keycheck(controls)
-        self.options = self.gui.update()
+        self.options = self.gui.update(t)
         if self.options["Resume"] or actions["Esc"]:
             self.gui.reset_button()
             self.exitstate()
@@ -181,7 +412,6 @@ class IGMenu(State):
 class SaveLoad(State):
     def __init__(self, game):
         super().__init__(game)
-        self.gui = GUI(4)
 
     def render(self):
         pass
@@ -193,17 +423,24 @@ class SaveLoad(State):
 class Setting(State):
     def __init__(self, game):
         super().__init__(game)
-        self.gui = GUI()
         self.setting = None
 
     def load_setting(self):
         try:
             with open(os.path.join('data', 'setting.json'), 'r+') as file:
                 self.setting = json.load(file)
-        except pygame.error:
+        except:
             # TO DO: Inform about setting reset
-            # self.setting = sumshiet
+            self.setting = self.default_setting()
             self.save_setting()
+
+    def default_setting(self):
+        default_setting = {
+            "Volume": 69,
+            "Resolution": (1280, 960),
+            "Fullscreen": False
+        }
+        return default_setting
 
     def save_setting(self):
         with open(os.path.join(os.getcwd(), 'data', 'setting.json'), 'w') as file:
@@ -214,3 +451,8 @@ class Setting(State):
 
     def update(self, t):
         pass
+
+
+class KeyBind(State):
+    def __init__(self, game):
+        super().__init__(game)

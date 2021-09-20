@@ -1,9 +1,10 @@
-import pygame, os
-from pygame.locals import *
+import os
+import pygame
+from pygame.constants import FULLSCREEN, DOUBLEBUF
 
-flags = FULLSCREEN | DOUBLEBUF
+flags0 = FULLSCREEN | DOUBLEBUF
+flags1 = DOUBLEBUF
 
-# pygame.font.Font()
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 gameres_w, gameres_h = 400, 300
@@ -31,9 +32,16 @@ class Sprite(pygame.sprite.Sprite):
 
 
 class Screen:
-    white = (255, 255, 255)
+    """Handle writing, game window, final render process"""
+    WHITE = (255, 255, 255)
+    BLUE = (0, 0, 255)
 
     def __init__(self, w, h, title):
+        """
+        w: width of the window
+        h: height of the window
+        title: title on the window
+        """
         super().__init__()
         global gameres_w
         global gameres_h
@@ -49,7 +57,7 @@ class Screen:
         self.scn = pygame.display.set_mode((w, h))
 
         self.surface = pygame.Surface((gameres_w, gameres_h))
-        self.scn.fill(Screen.white)
+        self.scn.fill(Screen.BLUE)
         self.sprites = pygame.sprite.Group()
         if self.w > self.h * self.ratio:
             self.x_offset = int(self.w - self.h * self.ratio) // 2
@@ -59,7 +67,7 @@ class Screen:
             self.h = int(self.w / self.ratio)
 
     def clear(self):
-        self.surface.fill((0, 0, 255))
+        self.surface.fill(Screen.WHITE)
 
     def rect(self, x, y, w, h, color):
         pygame.draw.rect(self.surface, color, (x, y, w, h))
@@ -76,11 +84,17 @@ class Screen:
     def draw(self, sprites):
         sprites.draw(self.surface)
 
-    def write_text(self, text, pos, size):
-        font = pygame.font.Font(None, size)
-        text_surface = font.render(text, True, (0, 0, 0))
+    def draw_line(self, color, pos1, pos2):
+        pygame.draw.line(self.surface, color, pos1, pos2, 2)
+
+    def write_text(self, text, color, pos, size, align="center"):
+        font = pygame.font.Font(os.path.join("assets", "PressStart2P-vaV7.ttf"), size)
+        text_surface = font.render(text, False, color)
         text_rect = text_surface.get_rect()
-        text_rect.center = pos
+        if align == "center":
+            text_rect.center = pos
+        elif align == "topright":
+            text_rect.topright = pos
         self.surface.blit(text_surface, text_rect)
 
     def render(self):
