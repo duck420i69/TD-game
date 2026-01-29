@@ -1,12 +1,12 @@
 import sys
-from State import *
+from State.State import *
 
 
 game = Game()
 clock = pygame.time.Clock()
 
 
-while not actions["Quit"]:
+while not actions_status["Quit"]:
     t = clock.tick(300)
     game.gameloop(t)
 

@@ -43,7 +43,7 @@ class Enemy:
             "Slow": [False, 0],
             "Stun": [False, 0],
             "Freeze": [False, 0]
-            }
+        }
 
         self.normal_status = {
             "Fire": [False, 0, 0],
@@ -52,7 +52,7 @@ class Enemy:
             "Elec": [False, 0, 0],
             "Earth": [False, 0, 0],
             "Wind": [False, 0, 0],
-            }
+        }
         self.status = self.normal_status.copy()
 
         self.path = themap.path
