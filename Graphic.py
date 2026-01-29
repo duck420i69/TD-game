@@ -20,7 +20,7 @@ def load_image(name):
 
 
 class Sprite(pygame.sprite.Sprite):
-    def __init__(self, image, x, y):
+    def __init__(self, image: pygame.Surface, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect()

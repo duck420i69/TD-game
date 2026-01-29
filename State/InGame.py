@@ -3,9 +3,10 @@ from Graphic import load_image
 from Map import Map
 from State import Game, State
 from Graphic import gameres_h, gameres_w
+from Control import actions_status
 
 
-class InGame(State):
+class InGame(State.State):
     def __init__(self, game: Game.Game, map_):
         super().__init__(game)
         self.gui = GUI.GUI(game, False)
@@ -172,7 +173,7 @@ class InGame(State):
             else:
                 self.lightning.remove(lightning)
 
-        if actions["Left Click"][0]:
+        if actions_status["Left Click"]["press"]:
             self.selected = False
             for tower in self.towers:
                 tower.click(self.gui.mouse_pos)
@@ -199,7 +200,7 @@ class InGame(State):
 
         if not self.selected:
             if self.options["Fire"]:
-                if actions["Left Click"][0]:
+                if actions_status["Left Click"]["press"]:
                     x = self.gui.mouse_pos[0]//self.map_.tilesize
                     y = self.gui.mouse_pos[1]//self.map_.tilesize
                     if 0 <= x <= self.map_.w and 0 <= x <= self.map_.h:
@@ -215,7 +216,7 @@ class InGame(State):
                         self.gui.last_act = None
 
             if self.options["Water"]:
-                if actions["Left Click"][0]:
+                if actions_status["Left Click"]["press"]:
                     x = self.gui.mouse_pos[0]//self.map_.tilesize
                     y = self.gui.mouse_pos[1]//self.map_.tilesize
                     if 0 <= x <= self.map_.w and 0 <= x <= self.map_.h:
@@ -231,7 +232,7 @@ class InGame(State):
                         self.gui.last_act = None
 
             if self.options["Ice"]:
-                if actions["Left Click"][0]:
+                if actions_status["Left Click"]["press"]:
                     x = self.gui.mouse_pos[0]//self.map_.tilesize
                     y = self.gui.mouse_pos[1]//self.map_.tilesize
                     if 0 <= x <= self.map_.w and 0 <= x <= self.map_.h:
@@ -247,7 +248,7 @@ class InGame(State):
                         self.gui.last_act = None
 
             if self.options["Elec"]:
-                if actions["Left Click"][0]:
+                if actions_status["Left Click"]["press"]:
                     x = self.gui.mouse_pos[0]//self.map_.tilesize
                     y = self.gui.mouse_pos[1]//self.map_.tilesize
                     if 0 <= x <= self.map_.w and 0 <= x <= self.map_.h:
@@ -263,7 +264,7 @@ class InGame(State):
                         self.gui.last_act = None
 
             if self.options["Earth"]:
-                if actions["Left Click"][0]:
+                if actions_status["Left Click"]["press"]:
                     x = self.gui.mouse_pos[0]//self.map_.tilesize
                     y = self.gui.mouse_pos[1]//self.map_.tilesize
                     if 0 <= x <= self.map_.w and 0 <= x <= self.map_.h:
@@ -279,7 +280,7 @@ class InGame(State):
                         self.gui.last_act = None
 
             if self.options["Wind"]:
-                if actions["Left Click"][0]:
+                if actions_status["Left Click"]["press"]:
                     x = self.gui.mouse_pos[0]//self.map_.tilesize
                     y = self.gui.mouse_pos[1]//self.map_.tilesize
                     if 0 <= x <= self.map_.w and 0 <= x <= self.map_.h:
@@ -308,7 +309,7 @@ class InGame(State):
                 self.money += self.selected_tower.sell()
                 self.towers.remove(self.selected_tower)
                 self.map_.sell_tower(self.selected_tower)
-            if actions["Right Click"]:
+            if actions_status["Right Click"]["press"]:
                 self.selected_tower.selected = False
                 self.gui_setup_normal()
                 self.prev_sel = True

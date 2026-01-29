@@ -1,6 +1,6 @@
 from GUI import GUI
 from State import InGame, State
-
+from Control import actions_status
 
 class MainMenu(State.State):
     def __init__(self, game):
@@ -29,4 +29,4 @@ class MainMenu(State.State):
         if self.options["Setting"]:
             pass
         if self.options["Exit"]:
-            actions["Quit"] = True
+            actions_status["Quit"]["press"] = True
