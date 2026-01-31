@@ -53,11 +53,11 @@ class Screen:
         pygame.display.set_caption(title)
 
         # Implement this later
-        # screen = pygame.display.set_mode(resolution, flags, 16)
-        self.scn = pygame.display.set_mode((w, h))
+        # self.screen = pygame.display.set_mode(resolution, flags, 16)
+        self.screen = pygame.display.set_mode((w, h))
 
         self.surface = pygame.Surface((gameres_w, gameres_h))
-        self.scn.fill(Screen.BLUE)
+        self.screen.fill(Screen.BLUE)
         self.sprites = pygame.sprite.Group()
         if self.w > self.h * self.ratio:
             self.x_offset = int(self.w - self.h * self.ratio) // 2
@@ -98,5 +98,5 @@ class Screen:
         self.surface.blit(text_surface, text_rect)
 
     def render(self):
-        self.scn.blit(pygame.transform.scale(self.surface, (self.w, self.h)), (self.x_offset, self.y_offset))
+        self.screen.blit(pygame.transform.scale(self.surface, (self.w, self.h)), (self.x_offset, self.y_offset))
         pygame.display.flip()

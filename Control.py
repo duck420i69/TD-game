@@ -9,7 +9,7 @@ actions = ["Quit", "Esc", "Left Click", "Right Click",
         "Up", "Left", "Down", "Right", "Start",
         "1", "2", "3", "4", "5", "6"]
 
-actions_status = {k: { "press": False, "hold": False } for k in actions}
+actions_status = {k: { "press": False, "hold": False, "release": False } for k in actions}
 
 def load_control():
     try:
@@ -45,23 +45,20 @@ def creat_defaultcontrol():
     return control
 
 
-def control_setting():
-    pass
-
 def handle_key(key: str, press: bool):
-    if press:
-        actions_status[key]["press"] = False
-        if not actions_status[key]["hold"]:
-            actions_status[key]["press"] = True
-        actions_status[key]["hold"] = True
-
-    if not press:
-        actions_status[key]["hold"] = False
+    if press and not actions_status[key]["hold"]:
+        actions_status[key]["press"] = True
+    if not press and actions_status[key]["hold"]:
+        actions_status[key]["release"] = True
+    actions_status[key]["hold"] = press
 
 
 def keycheck(control: dict[str, int]):
-    for event in pygame.event.get():
+    for action in actions:
+        actions_status[action]["press"] = False
+        actions_status[action]["release"] = False
 
+    for event in pygame.event.get():
         if event.type == pygame.QUIT:
             actions_status["Quit"] = { "press": True, "hold": True }
        
@@ -81,7 +78,7 @@ def keycheck(control: dict[str, int]):
 
 def resetkey():
     for action in actions:
-        actions[action] = { "press": False, "hold": False }
+        actions_status[action] = { "press": False, "hold": False }
 
 
 controls = load_control()

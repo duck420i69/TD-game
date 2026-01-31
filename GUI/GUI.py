@@ -1,73 +1,14 @@
+from pygame import Surface
 import pygame.transform
 
-from Graphic import gameres_h, gameres_w
+from GUI.Button import Button
+from Graphic import Screen, gameres_h, gameres_w
 from Control import *
 
 
-class Button(pygame.sprite.Sprite):
-    def __init__(self, sprites, name, x, y, buttonsize_x, buttonsize_y, key, click, timer):
-        super().__init__()
-        self.hold = False
-        self.click = click
-        self.timer = timer
-        self.t = 0
-        self.active = False
-        self.pressed = False
-
-        self.key = key
-        self.name = name
-
-        self.sprite = sprites
-        self.sizex, self.sizey = buttonsize_x, buttonsize_y
-        self.x, self.y = x - buttonsize_x//2, y - buttonsize_y//2
-        self.image = self.sprite[0]
-
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-
-    def press(self):
-        if not self.hold:
-            self.pressed = not self.pressed
-            self.hold = True
-            print(f"{self.name} {self.pressed}")
-        if self.timer > 0:
-            if self.t >= self.timer:
-                self.hold = False
-                self.t -= self.timer
-
-        if self.pressed:
-            self.image = self.sprite[1]
-        else:
-            self.image = self.sprite[0]
-
-    def release(self):
-        self.hold = False
-
-    def activate(self):
-        self.active = True
-
-    def deactivate(self):
-        self.active = False
-
-    def is_point(self, pos):
-        return self.rect.collidepoint(pos)
-
-    def reset(self):
-        self.pressed = False
-        self.hold = False
-        self.image = self.sprite[0]
-
-    def status(self):
-        return self.pressed
-
-    def update(self, t=0, *args, **kwargs) -> None:
-        if self.timer > 0:
-            self.t += t
-
-
 class Window:
-    def __init__(self, text, options, width, height):
-        self.window = pygame.Surface((width, height))
+    def __init__(self, text: str, options, width: int, height: int):
+        self.window = pygame.screen((width, height))
         self.options = options
         self.opt = len(options)
         self.text = text
@@ -75,13 +16,13 @@ class Window:
         self.cursor = 0
 
     def update(self):
-        if actions["Right"]:
+        if actions_status["Right"]["press"]:
             self.cursor += 1
             self.cursor = self.cursor % self.opt
-        if actions["Left"]:
+        if actions_status["Left"]["press"]:
             self.cursor -= 1
             self.cursor = self.cursor % self.opt
-        if actions["Start"]:
+        if actions_status["Start"]["press"]:
             self.options[self.cursor] = True
 
     def render(self, surface):
@@ -110,7 +51,7 @@ class GUI:
         self.cursor = 0
         self.last_act = None
         self.opt = 0
-        self.buttons_dict = {}
+        self.buttons_dict: dict[str, Button] = {}
         self.options = {}
         self.buttons = []
         self.sprite = pygame.sprite.Group()
@@ -140,63 +81,63 @@ class GUI:
             button.reset()
         self.last_act = None
 
-    def render(self, surface):
-        self.button_sprite.draw(surface.surface)
-        self.sprite.draw(surface.surface)
+    def render(self, screen: Screen):
+        self.button_sprite.draw(screen.surface)
+        self.sprite.draw(screen.surface)
 
     def update(self, t):
         self.t += t
         self.button_sprite.update(t)
         self.selected_button = None
         mouse_pos = pygame.mouse.get_pos()
-        self.mouse_pos = [(mouse_pos[0]-self.game.surface.x_offset) * gameres_w//self.game.surface.w,
-                          (mouse_pos[1]-self.game.surface.y_offset) * gameres_h//self.game.surface.h]
+        self.mouse_pos = [(mouse_pos[0]-self.game.screen.x_offset) * gameres_w//self.game.screen.w,
+                          (mouse_pos[1]-self.game.screen.y_offset) * gameres_h//self.game.screen.h]
         for button in self.buttons_dict.values():
             button.deactivate()
             if button.click:
                 button.pressed = False
-                button.image = button.sprite[0]
+                button.image = button.sprites[0]
                 # Key
                 if button.key is not None:
-                    if actions[button.key]:
+                    if actions_status[button.key]["press"]:
                         button.activate()
 
                 # Mouse
                 if button.is_point(self.mouse_pos):
                     self.selected_button = button.rect
                     self.cursor = self.buttons.index(button.name)
-                    if actions["Left Click"][0]:
+                    if actions_status["Left Click"]["release"]:
                         button.activate()
 
             else:
                 # Key
                 if button.key is not None:
-                    if actions[button.key]:
+                    if actions_status[button.key]["press"]:
                         button.activate()
 
                 # Mouse
                 if button.is_point(self.mouse_pos):
                     self.selected_button = button.rect
                     self.cursor = self.buttons.index(button.name)
-                    if actions["Left Click"][0]:
+                    if actions_status["Left Click"]["release"]:
                         button.activate()
 
         if self.use_cur:
-            if actions["Up"] and self.t > 300:
+            if actions_status["Up"]["hold"] and self.t > 300:
                 self.t = 0
                 self.cursor -= 1
                 self.cursor = self.cursor % self.opt
                 print(self.buttons[self.cursor])
-            elif actions["Down"] and self.t > 300:
+            elif actions_status["Down"]["hold"] and self.t > 300:
                 self.t = 0
                 self.cursor += 1
                 self.cursor = self.cursor % self.opt
                 print(self.buttons[self.cursor])
-            if actions["Start"]:
+            if actions_status["Start"]["press"]:
                 name = self.buttons[self.cursor]
                 self.buttons_dict[name].activate()
 
-        if actions["Right Click"]:
+        if actions_status["Right Click"]["press"]:
             self.reset_button()
             self.last_act = None
 

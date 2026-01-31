@@ -1,9 +1,16 @@
 from GUI import GUI
-from State import InGame, State
+from State.InGame import InGame
 from Control import actions_status
+from State import State
+
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from State.Game import Game
+
 
 class MainMenu(State.State):
-    def __init__(self, game):
+    def __init__(self, game: "Game"):
         super().__init__(game)
         self.gui = GUI.GUI(game)
         self.gui.add_button("Start", 200, 100, 150, 30)
@@ -13,10 +20,10 @@ class MainMenu(State.State):
         self.gui.add_button("Exit", 200, 260, 150, 30)
 
     def render(self):
-        self.game.surface.clear()
-        self.gui.render(self.game.surface)
-        self.game.surface.write_text("shittiest td game", (0, 0, 0), (200, 30), 20)
-        self.game.surface.render()
+        self.game.screen.clear()
+        self.gui.render(self.game.screen)
+        self.game.screen.write_text("shittiest td game", (0, 0, 0), (200, 30), 20)
+        self.game.screen.render()
 
     def update(self, t):
         self.options = self.gui.update(t)

@@ -1,5 +1,6 @@
 import pygame.sprite
 
+from Enemy import Enemy
 from Graphic import *
 
 
@@ -47,8 +48,8 @@ class Tower(pygame.sprite.Sprite):
         self.x = x * map_.tilesize + map_.tilesize // 2
         self.y = y * map_.tilesize + map_.tilesize // 2
         self.lv = lv
-        self.bullets = []
-        self.target = []
+        self.bullets: list[Bullet] = []
+        self.target: list[Enemy] = []
         self.atk = None
         self.spd = None
         self.ran = None

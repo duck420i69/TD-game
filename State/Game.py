@@ -1,13 +1,13 @@
 from Control import keycheck, controls
 from Graphic import Screen
-from State import MainMenu
+from State.MainMenu import MainMenu
 
 
 class Game:
     def __init__(self):
         self.w = 1000
         self.h = 750
-        self.surface = Screen(self.w, self.h, "Shitiest TD game ever")
+        self.screen = Screen(self.w, self.h, "Shitiest TD game ever")
         self.state = [MainMenu(self)]
         self.mainmenu = self.state
 

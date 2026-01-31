@@ -1,15 +1,23 @@
-from GUI import GUI
+from GUI.GUI import GUI
 from Graphic import load_image
 from Map import Map
-from State import Game, State
 from Graphic import gameres_h, gameres_w
 from Control import actions_status
+from State.State import State
+from Towers import *
+from Enemy import *
+
+from typing import TYPE_CHECKING
 
 
-class InGame(State.State):
-    def __init__(self, game: Game.Game, map_):
+if TYPE_CHECKING:
+    from State.Game import Game
+
+
+class InGame(State):
+    def __init__(self, game: "Game", map_: Map):
         super().__init__(game)
-        self.gui = GUI.GUI(game, False)
+        self.gui = GUI(game, False)
         # mapdata = load_map(map_)
         map_ = {
             "map": [[0 for _ in range(17)] for _ in range(15)],
@@ -28,8 +36,8 @@ class InGame(State.State):
         self.t = 0
         self.lightning = []
         self.wave = []
-        self.towers = []
-        self.enemies = []
+        self.towers: list[Tower] = []
+        self.enemies: list[Enemy] = []
         self.coin = load_image("coin.png")
         self.live_sprite = load_image("live.png")
         self.gui_sprite = load_image("ingamegui.png")
@@ -65,25 +73,25 @@ class InGame(State.State):
         self.gui.add_button("Sell", 370, 270, 20, 20, None, True)
 
     def render(self):
-        self.game.surface.clear()
-        self.map_.render(self.game.surface)
+        self.game.screen.clear()
+        self.map_.render(self.game.screen)
         for tower in self.towers:
             for bullet in tower.bullets:
-                bullet.render(self.game.surface)
+                bullet.render(self.game.screen)
         for enemy in self.enemies:
-            enemy.render(self.game.surface, self.element_sprite)
+            enemy.render(self.game.screen, self.element_sprite)
         for lightning in self.lightning:
-            self.game.surface.draw_line((212, 0, 249), lightning[1], lightning[2])
-        self.game.surface.rect(340, 0, 60, 300, (255, 255, 0))
-        self.game.surface.blit(self.gui_sprite, 340, 0)
-        self.game.surface.blit(self.frame, 342, 16)
-        self.game.surface.blit(self.frame, 342, 36)
-        self.gui.render(self.game.surface)
-        self.game.surface.write_text(f"{self.money}", (0, 0, 0), (395, 20), 8, "topright")
-        self.game.surface.write_text(f"{self.live}", (0, 0, 0), (395, 40), 8, "topright")
-        self.game.surface.blit(self.coin, 345, 20)
-        self.game.surface.blit(self.live_sprite, 345, 40)
-        self.game.surface.render()
+            self.game.screen.draw_line((212, 0, 249), lightning[1], lightning[2])
+        self.game.screen.rect(340, 0, 60, 300, (255, 255, 0))
+        self.game.screen.blit(self.gui_sprite, 340, 0)
+        self.game.screen.blit(self.frame, 342, 16)
+        self.game.screen.blit(self.frame, 342, 36)
+        self.gui.render(self.game.screen)
+        self.game.screen.write_text(f"{self.money}", (0, 0, 0), (395, 20), 8, "topright")
+        self.game.screen.write_text(f"{self.live}", (0, 0, 0), (395, 40), 8, "topright")
+        self.game.screen.blit(self.coin, 345, 20)
+        self.game.screen.blit(self.live_sprite, 345, 40)
+        self.game.screen.render()
 
     def update(self, t):
         self.options = self.gui.update(t)
