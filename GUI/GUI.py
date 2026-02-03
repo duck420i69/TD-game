@@ -1,7 +1,8 @@
-from pygame import Surface
+import pygame
 import pygame.transform
 
 from GUI.Button import Button
+from GUI.Frame import Frame
 from Graphic import Screen, gameres_h, gameres_w
 from Control import *
 
@@ -29,7 +30,7 @@ class Window:
         surface.blit(self.window)
 
 
-class GUI:
+class GUI(Frame):
     """
     This is the most verbose shiet that i have ever written. Good luck to understand this utter fucking mess
     GUI(use_curser)
