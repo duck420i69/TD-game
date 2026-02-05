@@ -16,14 +16,17 @@ class State:
         self.gui = GUI(game)
         self.options = {}
 
-    def update(self, t):
+    def update(self, dt):
         pass
 
     def render(self):
         pass
 
+    def handle_events(self, events: list[pygame.event.Event]):
+        for event in events:
+            self.gui.propagate_event(event)
+
     def enterstate(self, state):
-        self.gui.reset_button()
         self.game.state.append(state)
 
     def exitstate(self):

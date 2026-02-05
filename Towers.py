@@ -91,9 +91,9 @@ class Tower(pygame.sprite.Sprite):
     def rotate(self, x):
         pass
 
-    def update(self, t):
+    def update(self, dt):
         if not self.t >= 1000 / self.spd:
-            self.t += t
+            self.t += dt
 
     def add_target(self, enemy):
         self.target.append(enemy)
@@ -321,9 +321,9 @@ class ElecTower(Tower):
         if enemy.hp <= 0:
             enemy.delete = True
 
-    def update(self, t):
+    def update(self, dt):
         if self.t < self.charge:
-            self.t += t
+            self.t += dt
         else:
             self.t = self.charge
 

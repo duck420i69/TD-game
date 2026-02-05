@@ -239,16 +239,16 @@ class Enemy:
         surface.rect(self.pos[0] - 5, self.pos[1] - 10, 20 * (self.hp/self.maxhp), 3, (255, 0, 0))
 
     # noinspection PyUnresolvedReferences
-    def update(self, t):
+    def update(self, dt):
         # bottom
         for key in self.status.keys():
             if self.status[key][0]:
-                self.status[key][1] -= t
+                self.status[key][1] -= dt
             if self.status[key][1] < 0:
                 self.status[key] = self.normal_status[key].copy()
         for key in self.x_dmg.keys():
             if self.x_dmg[key][1] > 0:
-                self.x_dmg[key][1] -= t
+                self.x_dmg[key][1] -= dt
             else:
                 self.x_dmg[key] = [0, 0]
 
@@ -258,7 +258,7 @@ class Enemy:
                 for slow in self.debuff["Slow"]:
                     if slow[0]:
                         if slow[1] > 0:
-                            slow[1] -= t
+                            slow[1] -= dt
                             if slow[2] > slow_debuff:
                                 slow_debuff = slow[2]
                         else:
@@ -267,12 +267,12 @@ class Enemy:
                         self.debuff["Slow"].remove(slow)
             else:
                 if self.debuff[key][0]:
-                    self.debuff[key][2] -= t
+                    self.debuff[key][2] -= dt
                     if self.debuff[key][2] < 0:
                         self.debuff[key][0] = False
                         self.debuff[key][2] = 0
                 if self.debuff[key][1]:
-                    self.debuff[key][3] -= t
+                    self.debuff[key][3] -= dt
                     if self.debuff[key][3] < 0:
                         self.debuff[key] = [False, False, 0, 0]
 
@@ -281,7 +281,7 @@ class Enemy:
             self.status["Earth"][2] = 0
 
         if self.status["Fire"][0]:
-            self.hp -= self.status["Fire"][2] * t/1000
+            self.hp -= self.status["Fire"][2] * dt/1000
             if self.hp <= 0:
                 self.delete = True
 
@@ -304,7 +304,7 @@ class Enemy:
             slow_amount = 0
 
         if not self.debuff["Freeze"][0] and not self.debuff["Stun"][0]:
-            self.t += int(t * (slow_amount/2))
+            self.t += int(dt * (slow_amount/2))
 
 
 class Slime(Enemy):

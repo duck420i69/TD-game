@@ -1,13 +1,13 @@
 import os
+from typing import Union
 import pygame
 from pygame.constants import FULLSCREEN, DOUBLEBUF
+from constants import GAMERES_WIDTH, GAMERES_HEIGHT
 
 flags0 = FULLSCREEN | DOUBLEBUF
 flags1 = DOUBLEBUF
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
-
-gameres_w, gameres_h = 400, 300
 
 
 def load_image(name):
@@ -16,7 +16,7 @@ def load_image(name):
         image = pygame.image.load(file)
     except pygame.error:
         raise SystemExit('Could not load image "%s" %s' % (file, pygame.get_error()))
-    return image.convert_alpha()
+    return image.convert_alpha()   
 
 
 class Sprite(pygame.sprite.Sprite):
@@ -43,9 +43,7 @@ class Screen:
         title: title on the window
         """
         super().__init__()
-        global gameres_w
-        global gameres_h
-        self.ratio = gameres_w/gameres_h
+        self.ratio = GAMERES_WIDTH / GAMERES_HEIGHT
         self.w = w
         self.h = h
         self.x_offset = 0
@@ -55,9 +53,9 @@ class Screen:
         # Implement this later
         # self.screen = pygame.display.set_mode(resolution, flags, 16)
         self.screen = pygame.display.set_mode((w, h))
-
-        self.surface = pygame.Surface((gameres_w, gameres_h))
+        self.surface = pygame.Surface((GAMERES_WIDTH, GAMERES_HEIGHT))
         self.screen.fill(Screen.BLUE)
+        
         self.sprites = pygame.sprite.Group()
         if self.w > self.h * self.ratio:
             self.x_offset = int(self.w - self.h * self.ratio) // 2
@@ -100,3 +98,8 @@ class Screen:
     def render(self):
         self.screen.blit(pygame.transform.scale(self.surface, (self.w, self.h)), (self.x_offset, self.y_offset))
         pygame.display.flip()
+
+    def to_surface_space(self, vec2: Union[tuple[int, int], pygame.Vector2]):
+        return ((vec2[0] - self.x_offset) * GAMERES_WIDTH  // self.w,
+                (vec2[1] - self.y_offset) * GAMERES_HEIGHT // self.h)
+ 

@@ -36,6 +36,3 @@ class Setting(State):
 
     def render(self):
         pass
-
-    def update(self, t):
-        pass

@@ -53,12 +53,12 @@ def handle_key(key: str, press: bool):
     actions_status[key]["hold"] = press
 
 
-def keycheck(control: dict[str, int]):
+def keycheck(control: dict[str, int], events: list[pygame.event.Event]):
     for action in actions:
         actions_status[action]["press"] = False
         actions_status[action]["release"] = False
 
-    for event in pygame.event.get():
+    for event in events:
         if event.type == pygame.QUIT:
             actions_status["Quit"] = { "press": True, "hold": True }
        

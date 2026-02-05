@@ -7,6 +7,3 @@ class SaveLoad(State):
 
     def render(self):
         pass
-
-    def update(self, t):
-        pass

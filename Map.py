@@ -8,7 +8,6 @@
 # 2 : poison
 # 3 : ice
 # 4 : mage
-import pygame.sprite
 
 from Graphic import *
 import os, json
@@ -77,10 +76,10 @@ class Map:
 def load_map():
     try:
         with open(os.path.join('data', 'map.json'), 'r+') as file:
-            themap = json.load(file)
+            map = json.load(file)
     except pygame.error:
         raise SystemExit('Could not load map "%s" %s' % (file, pygame.get_error()))
-    return themap
+    return map
 
 
 def save_map(data):

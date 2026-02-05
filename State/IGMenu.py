@@ -1,6 +1,6 @@
 from GUI import GUI
 from State.InGame import InGame
-from Control import actions_status, keycheck, controls
+from Control import actions_status
 from State.SaveLoad import SaveLoad
 from State.Setting import Setting
 from State.State import State
