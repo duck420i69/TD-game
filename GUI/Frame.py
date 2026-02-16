@@ -13,11 +13,11 @@ class Frame:
 
     def add_button(self, button: Button):
         self.buttons.append(button)
-        self.renderable.add(button)
+        button.add(self.renderable)
 
     def clear_buttons(self):
         self.buttons.clear()
-        self.renderable.clear()
+        self.renderable.empty()
         for frame in self.frames:
             frame.clear_buttons()
 

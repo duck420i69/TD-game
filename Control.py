@@ -17,7 +17,7 @@ def load_control():
             control = json.load(file)
     except:
         # TO DO: Inform about control reset
-        control = creat_defaultcontrol()
+        control = create_default_control()
         save_control(control)
     return control
 
@@ -27,7 +27,7 @@ def save_control(data):
         json.dump(data, file)
 
 
-def creat_defaultcontrol():
+def create_default_control():
     control = {
         "Esc": pygame.K_ESCAPE,
         "Up": pygame.K_UP,
@@ -53,7 +53,7 @@ def handle_key(key: str, press: bool):
     actions_status[key]["hold"] = press
 
 
-def keycheck(control: dict[str, int], events: list[pygame.event.Event]):
+def key_check(control: dict[str, int], events: list[pygame.event.Event]):
     for action in actions:
         actions_status[action]["press"] = False
         actions_status[action]["release"] = False

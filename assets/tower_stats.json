@@ -1,0 +1,306 @@
+{
+  "FireTower": {
+    "bullet_image": "firebullet.png",
+    "tower_image": "firetower.png",
+    "levels": {
+      "1": {
+        "map_id": 11,
+        "atk": 8,
+        "spd": 0.8,
+        "rot": 150,
+        "ran": 100,
+        "bsize": 8,
+        "sell_price": 30,
+        "upgrade_price": 100,
+        "effects": {
+          "Damage": 8,
+          "Explosion": [true, 40],
+          "Fire": [true, 6000, 10],
+          "Elec": [false, 0, 0]
+        }
+      },
+      "2": {
+        "map_id": 12,
+        "atk": 20,
+        "spd": 1,
+        "rot": 120,
+        "ran": 160,
+        "bsize": 8,
+        "sell_price": 125,
+        "upgrade_price": 150,
+        "effects": {
+          "Damage": 20,
+          "Explosion": [true, 40],
+          "Fire": [true, 6000, 25],
+          "Elec": [false, 0, 0]
+        }
+      },
+      "3": {
+        "map_id": 13,
+        "atk": 75,
+        "spd": 1.2,
+        "rot": 150,
+        "ran": 140,
+        "bsize": 8,
+        "sell_price": 200,
+        "upgrade_price": null,
+        "effects": {
+          "Damage": 75,
+          "Explosion": [true, 40],
+          "Fire": [true, 8000, 45],
+          "Elec": [false, 0, 0]
+        }
+      }
+    }
+  },
+  "WaterTower": {
+    "bullet_image": "waterbullet.png",
+    "tower_image": "watertower.png",
+    "levels": {
+      "1": {
+        "map_id": 21,
+        "atk": 10,
+        "spd": 0.8,
+        "rot": 150,
+        "ran": 100,
+        "bsize": 8,
+        "sell_price": 30,
+        "upgrade_price": 100,
+        "effects": {
+          "Damage": 10,
+          "Explosion": [true, 60],
+          "Water": [true, 4500],
+          "Elec": [false, 0, 0]
+        }
+      },
+      "2": {
+        "map_id": 22,
+        "atk": 25,
+        "spd": 1,
+        "rot": 120,
+        "ran": 160,
+        "bsize": 8,
+        "sell_price": 80,
+        "upgrade_price": 150,
+        "effects": {
+          "Damage": 25,
+          "Explosion": [true, 60],
+          "Water": [true, 4500],
+          "Elec": [false, 0, 0]
+        }
+      },
+      "3": {
+        "map_id": 23,
+        "atk": 50,
+        "spd": 1.2,
+        "rot": 150,
+        "ran": 140,
+        "bsize": 8,
+        "sell_price": 120,
+        "upgrade_price": null,
+        "effects": {
+          "Damage": 50,
+          "Explosion": [true, 60],
+          "Water": [true, 4500],
+          "Elec": [false, 0, 0]
+        }
+      }
+    }
+  },
+  "IceTower": {
+    "bullet_image": "icebullet.png",
+    "tower_image": "icetower.png",
+    "base_bsize": 7,
+    "levels": {
+      "1": {
+        "map_id": 31,
+        "atk": 5,
+        "spd": 1,
+        "rot": 150,
+        "ran": 250,
+        "bsize": 8,
+        "sell_price": 30,
+        "upgrade_price": 80,
+        "effects": {
+          "Damage": 5,
+          "Explosion": [true, 25],
+          "Ice": [true, 4000, 0.2],
+          "Elec": [false, 0, 0]
+        }
+      },
+      "2": {
+        "map_id": 32,
+        "atk": 2,
+        "spd": 1.5,
+        "rot": 150,
+        "ran": 300,
+        "bsize": 8,
+        "sell_price": 75,
+        "upgrade_price": 150,
+        "effects": {
+          "Damage": 2,
+          "Explosion": [true, 25],
+          "Ice": [true, 4500, 0.3],
+          "Elec": [false, 0, 0]
+        }
+      },
+      "3": {
+        "map_id": 33,
+        "atk": 30,
+        "spd": 5,
+        "rot": 150,
+        "ran": 300,
+        "bsize": 8,
+        "sell_price": 200,
+        "upgrade_price": null,
+        "effects": {
+          "Damage": 30,
+          "Explosion": [true, 25],
+          "Ice": [true, 5000, 0.4],
+          "Elec": [false, 0, 0]
+        }
+      }
+    }
+  },
+  "ElecTower": {
+    "tower_image": "electower.png",
+    "base_charge": 7500,
+    "levels": {
+      "1": {
+        "map_id": 41,
+        "atk": 15,
+        "rot": 150,
+        "ran": 250,
+        "sell_price": 30,
+        "upgrade_price": 100,
+        "effects": {
+          "Damage": 15,
+          "Elec": [true, 6000, 4]
+        }
+      },
+      "2": {
+        "map_id": 42,
+        "atk": 80,
+        "rot": 150,
+        "ran": 300,
+        "sell_price": 125,
+        "upgrade_price": 200,
+        "effects": {
+          "Damage": 80,
+          "Elec": [true, 6000, 4]
+        }
+      },
+      "3": {
+        "map_id": 43,
+        "atk": 150,
+        "rot": 150,
+        "ran": 300,
+        "charge": 10000,
+        "sell_price": 200,
+        "upgrade_price": null,
+        "effects": {
+          "Damage": 150,
+          "Elec": [true, 6000, 4]
+        }
+      }
+    }
+  },
+  "EarthTower": {
+    "bullet_image": "mage bullet 3.png",
+    "tower_image": "earthtower.png",
+    "levels": {
+      "1": {
+        "map_id": 51,
+        "atk": 5,
+        "spd": 1,
+        "rot": 150,
+        "ran": 250,
+        "bsize": 8,
+        "effects": {
+          "Damage": 5,
+          "Explosion": [true, 25],
+          "Earth": [true, 6000, 3],
+          "Elec": [false, 0, 0]
+        }
+      },
+      "2": {
+        "map_id": 52,
+        "atk": 2,
+        "spd": 1.5,
+        "rot": 150,
+        "ran": 300,
+        "bsize": 8,
+        "effects": {
+          "Damage": 2,
+          "Explosion": [true, 25],
+          "Earth": [true, 6000, 3],
+          "Elec": [false, 0, 0]
+        }
+      },
+      "3": {
+        "map_id": 53,
+        "atk": 30,
+        "spd": 5,
+        "rot": 150,
+        "ran": 300,
+        "bsize": 8,
+        "effects": {
+          "Damage": 30,
+          "Explosion": [true, 25],
+          "Earth": [true, 6000, 3],
+          "Elec": [false, 0, 0]
+        }
+      }
+    }
+  },
+  "WindTower": {
+    "bullet_image": "windbullet.png",
+    "tower_image": "windtower.png",
+    "base_bsize": 4,
+    "levels": {
+      "1": {
+        "map_id": 61,
+        "atk": 5,
+        "spd": 1,
+        "rot": 150,
+        "ran": 250,
+        "bsize": 8,
+        "effects": {
+          "Damage": 5,
+          "Explosion": [false, 0],
+          "Wind": [true, 500, 1.2],
+          "Elec": [false, 0, 0]
+        }
+      },
+      "2": {
+        "map_id": 62,
+        "atk": 2,
+        "spd": 1.5,
+        "rot": 150,
+        "ran": 300,
+        "bsize": 8,
+        "effects": {
+          "Damage": 2,
+          "Explosion": [false, 0],
+          "Wind": [true, 500, 1.2],
+          "Elec": [false, 0, 0]
+        }
+      },
+      "3": {
+        "map_id": 63,
+        "atk": 30,
+        "spd": 5,
+        "rot": 150,
+        "ran": 300,
+        "bsize": 8,
+        "effects": {
+          "Damage": 30,
+          "Explosion": [false, 0],
+          "Wind": [true, 500, 1.2],
+          "Elec": [false, 0, 0]
+        }
+      }
+    }
+  }
+}
+

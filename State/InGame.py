@@ -1,10 +1,10 @@
 from GUI.Button import Button, ButtonSprites
 from GUI.GUI import GUI
-from Graphic import load_image
+
 from Map import Map
 from Control import actions_status
 from State.State import State
-from Towers import *
+from Tower import *
 from Enemy import *
 
 from typing import TYPE_CHECKING, Callable
@@ -55,20 +55,20 @@ class InGame(State):
         self.gui_setup_normal()
 
     def gui_setup_normal(self):
-        self.gui.add_button(self.make_icon_button((20, 20), "Pause", self.exitstate))
-        self.gui.add_button(self.make_icon_button((20, 270), "Call Waves"))
-        self.gui.add_button(self.make_icon_button((370, 80), "Fire"))
-        self.gui.add_button(self.make_icon_button((370, 110), "Water"))
-        self.gui.add_button(self.make_icon_button((370, 140), "Ice"))
-        self.gui.add_button(self.make_icon_button((370, 170), "Elec"))
-        self.gui.add_button(self.make_icon_button((370, 200), "Earth"))
-        self.gui.add_button(self.make_icon_button((370, 230), "Wind"))
+        self.make_icon_button((20, 20), "Pause", self.exit_state)
+        self.make_icon_button((20, 270), "Call Waves")
+        self.make_icon_button((370, 80), "Fire")
+        self.make_icon_button((370, 110), "Water")
+        self.make_icon_button((370, 140), "Ice")
+        self.make_icon_button((370, 170), "Elec")
+        self.make_icon_button((370, 200), "Earth")
+        self.make_icon_button((370, 230), "Wind")
 
     def gui_setup_tower(self):
-        self.gui.add_button("Pause", 20, 20, 20, 20, "Esc")
-        self.gui.add_button("Call Waves", 20, 270, 20, 20, None, True)
-        self.gui.add_button("Upgrade", 370, 240, 20, 20, None, True)
-        self.gui.add_button("Sell", 370, 270, 20, 20, None, True)
+        self.make_icon_button((20, 20), "Pause")
+        self.make_icon_button((20, 270), "Call Waves")
+        self.make_icon_button((370, 240), "Upgrade")
+        self.make_icon_button((370, 270), "Sell")
 
     def render(self):
         self.game.screen.clear()
@@ -91,9 +91,7 @@ class InGame(State):
         self.game.screen.blit(self.live_sprite, 345, 40)
         self.game.screen.render()
 
-    def update(self, t):
-        self.options = self.gui.update(t)
-
+    def update(self, dt: float):
         ############### GAME SYSTEM ###############
 
         # Enemy stuff
@@ -104,17 +102,17 @@ class InGame(State):
                 if enemy.hp > 0:
                     self.live -= enemy.life_lost
             else:
-                enemy.update(t)
-                enemy.move(t)
+                enemy.update(dt)
+                enemy.move(dt)
                 for tower in self.towers:
-                    if tower.inrange(enemy.position()):
+                    if tower.is_in_range(enemy.position()):
                         tower.add_target(enemy)
 
         # Collision system and tower atk
         for tower in self.towers:
-            tower.update(t)
+            tower.update(dt)
             if tower.any_target():
-                target = tower.target[tower.aim_target()]
+                target = tower.targets[tower.aim_target()]
                 tower.shoot(target)
                 tower.clear_target()
                 if tower.effects["Elec"][0]:
@@ -141,7 +139,7 @@ class InGame(State):
                             break
                     tower.t = 0
             for bullet in tower.bullets[:]:
-                bullet.move(t)
+                bullet.move(dt)
                 if (not -bullet.hitbox[2] < bullet.hitbox[0] < GAMERES_WIDTH
                         or not -bullet.hitbox[3] < bullet.hitbox[1] < GAMERES_HEIGHT):
                     bullet.dead = True
@@ -163,7 +161,7 @@ class InGame(State):
         for enemy_group in self.wave:
             # [enemy_type, lv, density, amount, selftime, timer]
             if self.t - enemy_group[5] >= 0:
-                enemy_group[4] += t
+                enemy_group[4] += dt
                 if enemy_group[3] > 0:
                     if enemy_group[4] >= enemy_group[2]:
                         enemy_group[3] -= 1
@@ -175,7 +173,7 @@ class InGame(State):
 
         for lightning in self.lightning:
             if lightning[0] > 0:
-                lightning[0] -= t
+                lightning[0] -= dt
             else:
                 self.lightning.remove(lightning)
 
@@ -197,7 +195,7 @@ class InGame(State):
 
         ############### GAME CONTROL ###############
         if self.options["Pause"]:
-            self.exitstate()
+            self.exit_state()
         if self.options["Call Waves"]:
             self.t = 0
             wave = self.map_.call_wave(self.current_wave)
@@ -320,23 +318,23 @@ class InGame(State):
                 self.gui_setup_normal()
                 self.prev_sel = True
 
-    def make_button(self, position: tuple[float, float], name: str, on_press: Callable[[], None] = None):
+    def make_button(self, position: tuple[int, int], name: str, on_press: Callable[[], None] = None):
         rect = pygame.Rect(0, 0, 150, 30)
         rect.center = (position[0], position[1])
-        return Button(
+        self.gui.add_button(Button(
             ButtonSprites.create_default(150, 30), 
             name, 
             rect, 
             on_press=on_press
-        )
+        ))
     
-    def make_icon_button(self, position: tuple[float, float], name: str, on_press: Callable[[], None] = None):
+    def make_icon_button(self, position: tuple[int, int], name: str, on_press: Callable[[], None] = None):
         rect = pygame.Rect(0, 0, 20, 20)
         rect.center = (position[0], position[1])
-        return Button(
+        self.gui.add_button(Button(
             ButtonSprites.create_default(20, 20), 
             name, 
             rect, 
             on_press=on_press,
             is_icon=True
-        )
+        ))

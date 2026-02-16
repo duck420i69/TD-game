@@ -3,21 +3,21 @@ from Graphic import *
 
 class Enemy:
     """
-    Lot, lot of code with weird engineering
+    Lots, lots of code with weird engineering
     Handling all the effect and movement of enemy
     """
-    def __init__(self, lv, themap):
+    def __init__(self, lv, __map):
         super().__init__()
         self.shadow = load_image("shadow.png")
         self.shadow.set_alpha(40)
         self.money = 5
-        self.maxhp = 100
+        self.max_hp = 100
         self.lv = lv
-        self.maxhp = self.maxhp * (1.05 ** self.lv)
-        self.hp = self.maxhp
+        self.max_hp = self.max_hp * (1.05 ** self.lv)
+        self.hp = self.max_hp
         self.life_lost = 1
-        self.nor_ms = 30
-        self.ms = self.nor_ms
+        self.default_ms = 30
+        self.ms = self.default_ms
 
         self.x_dmg = {
             "Fire": [0, 0],
@@ -55,7 +55,7 @@ class Enemy:
         }
         self.status = self.normal_status.copy()
 
-        self.path = themap.path
+        self.path = __map.path
         self.i = 1
         self.pos = pygame.Vector2(self.path[0])
         self.moved = 0
@@ -80,12 +80,12 @@ class Enemy:
         self.mvec = self.vec.normalize()
         self.b4vec = self.mvec
 
-    def move(self, t):
+    def move(self, dt):
         if not self.debuff["Freeze"][0] and not self.debuff["Stun"][0]:
             # Check if move to the end
             if pygame.Vector2.dot(self.vec, self.b4vec) > 0:
-                self.pos = self.pos + self.mvec * self.ms * t/1000
-                self.moved += self.ms * t/1000
+                self.pos = self.pos + self.mvec * self.ms * dt / 1000
+                self.moved += self.ms * dt / 1000
                 self.feet = self.pos + pygame.Vector2(self.hitbox_w / 2, self.hitbox_h)
                 self.vec = self.end - self.pos
                 self.hitbox = [self.pos[0], self.pos[1], self.hitbox_w, self.hitbox_h]
@@ -113,7 +113,7 @@ class Enemy:
     def center(self):
         return self.pos + pygame.Vector2(self.hitbox_w/2, self.hitbox_h/2)
 
-    def dmg_recieve(self, bullet, type):
+    def dmg_receive(self, bullet, type):
         self.hp -= bullet.effects["Damage"] * (1 - self.immune[type][1]) * (1 + self.x_dmg[type][0])
 
     def get_hit(self, bullet):
@@ -128,7 +128,7 @@ class Enemy:
                     if self.debuff["Freeze"][0]:
                         self.debuff["Freeze"] = [False, True, 0, 2000]
                         self.x_dmg[key] = [1.5, 0]
-                    self.dmg_recieve(bullet, key)
+                    self.dmg_receive(bullet, key)
 
             elif key == "Fire":
                 if bullet.effects[key][0]:
@@ -147,7 +147,7 @@ class Enemy:
                             dot = self.status[key][2]
                             self.status[key] = bullet.effects[key].copy()
                             self.status[key][2] = dot
-                    self.dmg_recieve(bullet, key)
+                    self.dmg_receive(bullet, key)
 
             elif key == "Water":
                 if bullet.effects[key][0]:
@@ -161,17 +161,17 @@ class Enemy:
                         self.status[key] = bullet.effects[key].copy()
                     else:
                         self.status[key] = bullet.effects[key].copy()
-                    self.dmg_recieve(bullet, key)
+                    self.dmg_receive(bullet, key)
 
             elif key == "Elec":
                 if bullet.effects[key][0]:
                     self.status[key] = bullet.effects[key].copy()
-                    self.dmg_recieve(bullet, key)
+                    self.dmg_receive(bullet, key)
 
             elif key == "Wind":
                 if bullet.effects[key][0]:
                     self.status[key] = bullet.effects[key].copy()
-                    self.dmg_recieve(bullet, key)
+                    self.dmg_receive(bullet, key)
 
             elif key == "Ice":
                 if bullet.effects[key][0]:
@@ -180,7 +180,7 @@ class Enemy:
                         self.x_dmg["Ice"] = [0.75, 0]
                     if not self.debuff["Freeze"][1]:
                         self.status[key] = bullet.effects[key].copy()
-                    self.dmg_recieve(bullet, key)
+                    self.dmg_receive(bullet, key)
 
         if self.hp <= 0:
             self.delete = True
@@ -189,28 +189,28 @@ class Enemy:
         if self.debuff["Freeze"][0] or self.debuff["Stun"][0]:
             pos = self.pos
         else:
-            lenght = t * self.ms
+            length = t * self.ms
             i = self.i
             pos = self.pos
             vec = self.end - self.pos
-            vec_lenght = vec.length()
-            prev_lenght = lenght
-            lenght -= vec_lenght
-            while lenght > 0:
+            vec_length = vec.length()
+            prev_length = length
+            length -= vec_length
+            while length > 0:
                 if i < len(self.path) - 1:
                     pos = pygame.Vector2(self.path[i])
                     i += 1
                     end = pygame.Vector2(self.path[i])
                     vec = end - pos
-                    vec_lenght = vec.length()
-                    prev_lenght = lenght
-                    lenght -= vec_lenght
+                    vec_length = vec.length()
+                    prev_length = length
+                    length -= vec_length
                 else:
-                    lenght = 0
-            if lenght == 0:
+                    length = 0
+            if length == 0:
                 pos = self.path[i]
             else:
-                vec.scale_to_length(prev_lenght)
+                vec.scale_to_length(prev_length)
                 pos = pos + vec
             pos = pos + pygame.Vector2(self.hitbox_w/2, self.hitbox_h/2)
         return pos
@@ -236,7 +236,7 @@ class Enemy:
                         surface.blit(element_sprite[element], x, self.pos[1] - 14)
                         x += 3
         surface.rect(self.pos[0] - 6, self.pos[1] - 11, 22, 5, (128, 128, 128))
-        surface.rect(self.pos[0] - 5, self.pos[1] - 10, 20 * (self.hp/self.maxhp), 3, (255, 0, 0))
+        surface.rect(self.pos[0] - 5, self.pos[1] - 10, 20 * (self.hp / self.max_hp), 3, (255, 0, 0))
 
     # noinspection PyUnresolvedReferences
     def update(self, dt):
@@ -299,7 +299,7 @@ class Enemy:
 
         if not self.immune["Slow"][0]:
             slow_amount = (1 - slow_debuff * (1 - self.immune["Slow"][1]))
-            self.ms = self.nor_ms * slow_amount
+            self.ms = self.default_ms * slow_amount
         else:
             slow_amount = 0
 
@@ -308,8 +308,8 @@ class Enemy:
 
 
 class Slime(Enemy):
-    def __init__(self, lv, themap):
-        super().__init__(lv, themap)
+    def __init__(self, lv, __map):
+        super().__init__(lv, __map)
 
         self.between_time = 100
         self.sprite = [load_image("slime0.png"), load_image("slime1.png"), load_image("slime2.png"),

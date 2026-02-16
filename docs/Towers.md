@@ -45,7 +45,7 @@ Classes
   - `update(dt)`: accumulate `t` toward firing threshold
   - `add_target(enemy)`, `clear_target()`, `any_target()`
   - `aim_target()`: choose target by greatest distance travelled (progress)
-  - `inrange(pos)`: check if a position (pygame.Vector2) is within range and if tower ready to fire
+  - `is_in_range(pos)`: check if a position (pygame.Vector2) is within range and if tower ready to fire
   - `shoot(enemy)`: spawn a `Bullet` aiming at predicted enemy position (uses `enemy.predict_move`)
 
 Tower subclasses (overview)
@@ -66,7 +66,7 @@ Tower subclasses (overview)
 - `ElecTower`:
   - Uses a channel/charge mechanic (`charge` and `t`), deals continuous/instant damage when firing.
   - `shoot` applies `Elec` status and reduces enemy hp directly using `self.atk * self.t/1000`.
-  - `inrange` requires `t >= 2500` to enable firing.
+  - `is_in_range` requires `t >= 2500` to enable firing.
 
 - `EarthTower`:
   - `map.assign(51/52/53, ...)`
@@ -77,7 +77,7 @@ Tower subclasses (overview)
   - Effects include `Wind` (multiplier) and relatively fast bullets.
 
 Effects schema
-- Effects are dictionaries attached to towers/bullets and read by `Enemy.get_hit()`/`dmg_recieve()`.
+- Effects are dictionaries attached to towers/bullets and read by `Enemy.get_hit()`/`dmg_receive()`.
 - Common keys and formats (observed in code and comments):
   - `"Damage"`: numeric base damage (number)
   - `"Explosion"`: `[Active(bool), Range(int)]` — area-of-effect flag and radius
@@ -115,10 +115,10 @@ map_.place_tower(ft)
 # each frame / tick
 for tower in map_.tower_sprite:
     tower.update(dt)
-    # for each enemy in enemy_list: if tower.inrange(enemy.position()): tower.add_target(enemy)
+    # for each enemy in enemy_list: if tower.is_in_range(enemy.position()): tower.add_target(enemy)
     if tower.any_target():
-        target = tower.target[tower.aim_target()]
-        if tower.inrange(target.center()):
+        target = tower.targets[tower.aim_target()]
+        if tower.is_in_range(target.center()):
             tower.shoot(target)
     # update bullets
     for b in tower.bullets:

@@ -5,16 +5,16 @@ import pygame
 from State.Game import Game
 from Control import actions_status
 
-
-game = Game()
-clock = pygame.time.Clock()
-
-
-while not actions_status["Quit"]["press"]:
-    t = clock.tick(300)
-    game.gameloop(t)
+if __name__ == "__main__":
+    game = Game()
+    clock = pygame.time.Clock()
 
 
-pygame.display.quit()
-pygame.quit()
-sys.exit()
+    while not actions_status["Quit"]["press"]:
+        t = clock.tick(300)
+        game.gameloop(t)
+
+
+    pygame.display.quit()
+    pygame.quit()
+    sys.exit()

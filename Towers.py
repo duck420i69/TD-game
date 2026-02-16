@@ -31,7 +31,7 @@ class Bullet(pygame.sprite.Sprite):
 
 
 class Tower(pygame.sprite.Sprite):
-    def __init__(self, map_, x, y, lv):
+    def __init__(self, map_, x: int, y: int, lv: int):
         super().__init__()
         self.effects = {
             "Damage": 0,
@@ -63,7 +63,7 @@ class Tower(pygame.sprite.Sprite):
         self.map = map_
         self.image = pygame.Surface((20, 20))
         self.rect = self.image.get_rect()
-        self.rect.center = [self.x, self.y]
+        self.rect.center = (self.x, self.y)
         self.selected = False
         self.get_stat()
 
@@ -108,13 +108,14 @@ class Tower(pygame.sprite.Sprite):
 
     def aim_target(self):
         val = 0
+        index = -1
         for i, enemy in enumerate(self.target):
             if enemy.moveded() > val:
                 val = enemy.moveded()
                 index = i
         return index
 
-    def inrange(self, pos):
+    def is_in_range(self, pos):
         check = False
         if self.t >= 1000 / self.spd:
             vec2 = pos - pygame.Vector2(self.x, self.y)
@@ -327,7 +328,7 @@ class ElecTower(Tower):
         else:
             self.t = self.charge
 
-    def inrange(self, pos):
+    def is_in_range(self, pos):
         check = False
         if self.t >= 2500:
             vec2 = pos - pygame.Vector2(self.x, self.y)

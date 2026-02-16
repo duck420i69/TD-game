@@ -1,5 +1,5 @@
 import pygame
-from Control import keycheck, controls
+from Control import key_check, controls
 from Graphic import Screen
 from State.MainMenu import MainMenu
 
@@ -14,7 +14,7 @@ class Game:
 
     def gameloop(self, dt):
         events = pygame.event.get()
-        keycheck(controls, events)
+        key_check(controls, events)
         self.state[-1].handle_events(events)
         self.state[-1].update(dt)
         self.state[-1].render()

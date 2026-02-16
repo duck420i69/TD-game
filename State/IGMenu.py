@@ -26,13 +26,13 @@ class IGMenu(State):
         self.options = self.gui.update(t)
         if self.options["Resume"] or actions_status["Esc"]:
             self.gui.reset_button()
-            self.exitstate()
+            self.exit_state()
         if self.options["Save & Load"]:
             self.gui.reset_button()
-            self.enterstate(SaveLoad(self.game))
+            self.enter_state(SaveLoad(self.game))
         if self.options["Setting"]:
             self.gui.reset_button()
-            self.enterstate(Setting(self.game))
+            self.enter_state(Setting(self.game))
         if self.options["Exit"]:
             self.gui.reset_button()
             self.game.exit()

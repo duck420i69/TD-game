@@ -76,10 +76,10 @@ class Map:
 def load_map():
     try:
         with open(os.path.join('data', 'map.json'), 'r+') as file:
-            map = json.load(file)
+            __map = json.load(file)
     except pygame.error:
         raise SystemExit('Could not load map "%s" %s' % (file, pygame.get_error()))
-    return map
+    return __map
 
 
 def save_map(data):

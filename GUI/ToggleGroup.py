@@ -5,7 +5,7 @@ class ToggleGroup:
     
     def __init__(self):
         self.buttons: list[ToggleButton] = []
-        self.selected: ToggleButton = None
+        self.selected: ToggleButton | None = None
     
     def add_button(self, button: ToggleButton):
         """Add a button to the group."""

@@ -1,13 +1,10 @@
 from GUI.GUI import *
-from Control import *
-from Map import *
-from Towers import *
 from Enemy import *
 
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from State.Game import Game
+    from Game import Game
 
 
 class State:
@@ -26,10 +23,10 @@ class State:
         for event in events:
             self.gui.propagate_event(event)
 
-    def enterstate(self, state):
+    def enter_state(self, state):
         self.game.state.append(state)
 
-    def exitstate(self):
+    def exit_state(self):
         self.game.state.pop()
 
 

@@ -20,7 +20,7 @@ def load_image(name):
 
 
 class Sprite(pygame.sprite.Sprite):
-    def __init__(self, image: pygame.Surface, x, y):
+    def __init__(self, image: pygame.Surface, x: int, y: int):
         pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect()
@@ -28,7 +28,7 @@ class Sprite(pygame.sprite.Sprite):
         self.rect.y = y
 
     def pos(self, x, y):
-        self.rect.topleft = [x, y]
+        self.rect.topleft = (x, y)
 
 
 class Screen:
@@ -36,7 +36,7 @@ class Screen:
     WHITE = (255, 255, 255)
     BLUE = (0, 0, 255)
 
-    def __init__(self, w, h, title):
+    def __init__(self, w: int, h: int, title: str):
         """
         w: width of the window
         h: height of the window
@@ -72,28 +72,6 @@ class Screen:
 
     def blit(self, image, x, y):
         self.surface.blit(image, (x, y))
-
-    def add_sprite(self, sprite):
-        self.sprites.add(sprite)
-
-    def remove_sprite(self, sprite):
-        self.sprites.remove(sprite)
-
-    def draw(self, sprites):
-        sprites.draw(self.surface)
-
-    def draw_line(self, color, pos1, pos2):
-        pygame.draw.line(self.surface, color, pos1, pos2, 2)
-
-    def write_text(self, text, color, pos, size, align="center"):
-        font = pygame.font.Font(os.path.join("assets", "PressStart2P-vaV7.ttf"), size)
-        text_surface = font.render(text, False, color)
-        text_rect = text_surface.get_rect()
-        if align == "center":
-            text_rect.center = pos
-        elif align == "topright":
-            text_rect.topright = pos
-        self.surface.blit(text_surface, text_rect)
 
     def render(self):
         self.screen.blit(pygame.transform.scale(self.surface, (self.w, self.h)), (self.x_offset, self.y_offset))
