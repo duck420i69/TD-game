@@ -1,4 +1,4 @@
-# Tower System Refactoring - Complete Summary
+ Tower System Refactoring - Complete Summary
 
 ## Overview
 Successfully refactored the TD-game tower system by moving all tower subclasses from a single `Towers.py` file to their own individual files within a new `Tower/` package directory.
