@@ -24,7 +24,7 @@ class Bullet(pygame.sprite.Sprite):
         self.hitbox = [self.pos[0], self.pos[1], self.bsize, self.bsize]
 
     def render(self, surface):
-        surface.blit(self.image, self.pos[0], self.pos[1])
+        surface.blit(self.image, (self.pos[0], self.pos[1]))
 
     def update(self, *args, **kwargs) -> None:
         self.rect.topleft = [self.x, self.y]
@@ -49,7 +49,7 @@ class Tower(pygame.sprite.Sprite):
         self.y = y * map_.tilesize + map_.tilesize // 2
         self.lv = lv
         self.bullets: list[Bullet] = []
-        self.target: list[Enemy] = []
+        self.targets: list[Enemy] = []
         self.atk = None
         self.spd = None
         self.ran = None
@@ -96,20 +96,20 @@ class Tower(pygame.sprite.Sprite):
             self.t += dt
 
     def add_target(self, enemy):
-        self.target.append(enemy)
+        self.targets.append(enemy)
 
     def clear_target(self):
-        self.target.clear()
+        self.targets.clear()
 
     def any_target(self):
-        if len(self.target) > 0:
+        if len(self.targets) > 0:
             return True
         return False
 
     def aim_target(self):
         val = 0
         index = -1
-        for i, enemy in enumerate(self.target):
+        for i, enemy in enumerate(self.targets):
             if enemy.moveded() > val:
                 val = enemy.moveded()
                 index = i

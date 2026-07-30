@@ -13,10 +13,9 @@ actions_status = {k: { "press": False, "hold": False, "release": False } for k i
 
 def load_control():
     try:
-        with open(os.path.join('assets', 'control.json'), 'r+') as file:
+        with open(os.path.join('assets', 'control.json'), 'r') as file:
             control = json.load(file)
-    except:
-        # TO DO: Inform about control reset
+    except (FileNotFoundError, json.JSONDecodeError):
         control = create_default_control()
         save_control(control)
     return control
@@ -58,13 +57,14 @@ def key_check(control: dict[str, int], events: list[pygame.event.Event]):
         actions_status[action]["press"] = False
         actions_status[action]["release"] = False
 
+    mouse_pressed = pygame.mouse.get_pressed(3)
+    handle_key("Left Click", mouse_pressed[0])
+    handle_key("Right Click", mouse_pressed[2])
+
     for event in events:
         if event.type == pygame.QUIT:
             actions_status["Quit"] = { "press": True, "hold": True }
-       
-        handle_key("Left Click", pygame.mouse.get_pressed(3)[0])
-        handle_key("Right Click", pygame.mouse.get_pressed(3)[2])
-
+        
         if event.type == pygame.KEYDOWN:
             for key in control.keys():
                 if event.key == control[key]:

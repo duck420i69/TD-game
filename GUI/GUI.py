@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 class Window:
     def __init__(self, text: str, options, width: int, height: int):
-        self.window = pygame.screen((width, height))
+        self.window = pygame.display.set_mode((width, height))
         self.options = options
         self.opt = len(options)
         self.text = text
@@ -36,6 +36,31 @@ class GUI(Frame):
     def __init__(self, game: "Game"):
         super().__init__(game.screen.screen.get_rect())
         self.game = game
+        self.mouse_pos = (0, 0)
+        self.buttons_dict = {}
+        self.last_act = None
+
+    def update(self, dt):
+        self.mouse_pos = pygame.mouse.get_pos()
+        options = {
+            "Pause": False,
+            "Call Waves": False,
+            "Fire": False,
+            "Water": False,
+            "Ice": False,
+            "Elec": False,
+            "Earth": False,
+            "Wind": False,
+            "Upgrade": False,
+            "Sell": False
+        }
+        
+        for button_name, button in self.buttons_dict.items():
+            if button_name in options:
+                options[button_name] = button.pressed
+                button.pressed = False
+        
+        return options
 
     def propagate_event(self, event: pygame.event.Event) -> bool:
         if "pos" in event.dict.keys():

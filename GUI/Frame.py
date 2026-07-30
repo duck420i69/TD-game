@@ -13,6 +13,7 @@ class Frame:
 
     def add_button(self, button: Button):
         self.buttons.append(button)
+        self.buttons_dict[button.name] = button
         button.add(self.renderable)
 
     def clear_buttons(self):

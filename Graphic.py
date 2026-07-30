@@ -57,6 +57,7 @@ class Screen:
         self.screen.fill(Screen.BLUE)
         
         self.sprites = pygame.sprite.Group()
+        self.font_cache = {}
         if self.w > self.h * self.ratio:
             self.x_offset = int(self.w - self.h * self.ratio) // 2
             self.w = int(self.h * self.ratio)
@@ -80,4 +81,13 @@ class Screen:
     def to_surface_space(self, vec2: Union[tuple[int, int], pygame.Vector2]):
         return ((vec2[0] - self.x_offset) * GAMERES_WIDTH  // self.w,
                 (vec2[1] - self.y_offset) * GAMERES_HEIGHT // self.h)
+
+    def write_text(self, text: str, color: tuple, position: tuple, size: int, align: str = "topleft"):
+        if size not in self.font_cache:
+            self.font_cache[size] = pygame.font.Font(None, size)
+        font = self.font_cache[size]
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        setattr(text_rect, align, position)
+        self.surface.blit(text_surface, text_rect)
  

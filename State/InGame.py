@@ -52,9 +52,22 @@ class InGame(State):
         self.selected = False
         self.prev_sel = False
         self.selected_tower = None
+        self.options = {
+            "Pause": False,
+            "Call Waves": False,
+            "Fire": False,
+            "Water": False,
+            "Ice": False,
+            "Elec": False,
+            "Earth": False,
+            "Wind": False,
+            "Upgrade": False,
+            "Sell": False
+        }
         self.gui_setup_normal()
 
     def gui_setup_normal(self):
+        self.gui.clear_buttons()
         self.make_icon_button((20, 20), "Pause", self.exit_state)
         self.make_icon_button((20, 270), "Call Waves")
         self.make_icon_button((370, 80), "Fire")
@@ -65,6 +78,7 @@ class InGame(State):
         self.make_icon_button((370, 230), "Wind")
 
     def gui_setup_tower(self):
+        self.gui.clear_buttons()
         self.make_icon_button((20, 20), "Pause")
         self.make_icon_button((20, 270), "Call Waves")
         self.make_icon_button((370, 240), "Upgrade")
@@ -207,7 +221,7 @@ class InGame(State):
                 if actions_status["Left Click"]["press"]:
                     x = self.gui.mouse_pos[0]//self.map_.tilesize
                     y = self.gui.mouse_pos[1]//self.map_.tilesize
-                    if 0 <= x <= self.map_.w and 0 <= x <= self.map_.h:
+                    if 0 <= x <= self.map_.w and 0 <= y <= self.map_.h:
                         if self.money >= 50:
                             if self.map_.assign(11, x, y):
                                 self.money -= 50

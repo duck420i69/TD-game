@@ -40,7 +40,7 @@ class Map:
                     grass = Sprite(self.grass, self.tilesize * i, self.tilesize * j)
                     grass.add(self.sprites)
                 if self.map[j][i] == -10:
-                    road = Sprite(self.road, self.tilesize * i, self. tilesize * j)
+                    road = Sprite(self.road, self.tilesize * i, self.tilesize * j)
                     road.add(self.sprites)
 
         self.waves = [[("Slime", 10, 1500, 5, 1500, 0)]]
@@ -75,10 +75,10 @@ class Map:
 
 def load_map():
     try:
-        with open(os.path.join('data', 'map.json'), 'r+') as file:
+        with open(os.path.join('data', 'map.json'), 'r') as file:
             __map = json.load(file)
-    except pygame.error:
-        raise SystemExit('Could not load map "%s" %s' % (file, pygame.get_error()))
+    except (FileNotFoundError, json.JSONDecodeError):
+        raise SystemExit('Could not load map "%s"' % os.path.join('data', 'map.json'))
     return __map
 
 

@@ -219,21 +219,21 @@ class Enemy:
         self.t = self.t % (self.between_time * self.animate)
         self.frame = self.t // self.between_time
         image = self.sprite[self.frame]
-        surface.blit(self.shadow, self.pos[0] + 1, self.feet[1] - 7)
-        surface.blit(image, self.pos[0], self.pos[1])
+        surface.blit(self.shadow, (self.pos[0] + 1, self.feet[1] - 7))
+        surface.blit(image, (self.pos[0], self.pos[1]))
         x = self.pos[0] - 6
         for element, status in self.status.items():
             if status[0]:
                 if element == "Earth":
                     if status[2] == 1:
-                        surface.blit(element_sprite["Earth"][0], x, self.pos[1] - 14)
+                        surface.blit(element_sprite["Earth"][0], (x, self.pos[1] - 14))
                         x += 3
                     elif status[2] == 2:
-                        surface.blit(element_sprite["Earth"][1], x, self.pos[1] - 14)
+                        surface.blit(element_sprite["Earth"][1], (x, self.pos[1] - 14))
                         x += 3
                 else:
                     if element != "Wind":
-                        surface.blit(element_sprite[element], x, self.pos[1] - 14)
+                        surface.blit(element_sprite[element], (x, self.pos[1] - 14))
                         x += 3
         surface.rect(self.pos[0] - 6, self.pos[1] - 11, 22, 5, (128, 128, 128))
         surface.rect(self.pos[0] - 5, self.pos[1] - 10, 20 * (self.hp / self.max_hp), 3, (255, 0, 0))
@@ -255,7 +255,7 @@ class Enemy:
         slow_debuff = 0
         for key in self.debuff.keys():
             if key == "Slow":
-                for slow in self.debuff["Slow"]:
+                for slow in self.debuff["Slow"][:]:
                     if slow[0]:
                         if slow[1] > 0:
                             slow[1] -= dt
